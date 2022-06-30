@@ -6,3 +6,7 @@
   - aucune utilisation de spring n'est faite :
     - dans le programme principale
     - au niveau des test
+
+#### 1-declaration-beans:
+  - mise en place de la configuration avec des beans sring xml
+
