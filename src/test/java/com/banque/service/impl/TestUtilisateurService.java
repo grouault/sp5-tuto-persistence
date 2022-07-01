@@ -1,7 +1,9 @@
 package com.banque.service.impl;
 
+import com.banque.service.IOperationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,6 +12,7 @@ import com.banque.entity.IUtilisateurEntity;
 import com.banque.service.IAuthentificationService;
 import com.banque.service.ex.MauvaisMotdepasseException;
 import com.banque.service.ex.UtilisateurInconnuException;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Test sur la classe IAuthentificationService.
@@ -18,15 +21,26 @@ public class TestUtilisateurService {
 	private static final Logger LOG = LogManager.getLogger();
 	private static IAuthentificationService authentificationService;
 
+	private static ClassPathXmlApplicationContext context = null;
+
 	/**
 	 * Initialisation du log. <br/>
 	 * Appele au demarrage de tous les tests.
 	 */
 	@BeforeClass
 	public static void initLog() {
-		TestUtilisateurService.authentificationService = new AuthentificationService();
+		context = new ClassPathXmlApplicationContext("spring/*-context.xml");
+		TestUtilisateurService.authentificationService = context.getBean(IAuthentificationService.class);
 	}
 
+	@AfterClass
+	public static void endTest() {
+		LOG.info("endTest");
+		if (context != null) {
+			context.close();
+		}
+	}
+	
 	/**
 	 * Test
 	 */

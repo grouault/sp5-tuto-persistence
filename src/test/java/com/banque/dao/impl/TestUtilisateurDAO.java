@@ -1,11 +1,13 @@
 package com.banque.dao.impl;
 
+import com.banque.dao.IOperationDAO;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.ESex;
 import com.banque.entity.IUtilisateurEntity;
 import com.banque.entity.impl.UtilisateurEntity;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Test sur la classe UtilisateurDAO.
@@ -24,13 +27,24 @@ public class TestUtilisateurDAO {
 
 	private static IUtilisateurDAO utilisateurDao;
 
+	private static ClassPathXmlApplicationContext context = null;
+
 	/**
 	 * Initialisation du log. <br/>
 	 * Appele au demarrage de tous les tests.
 	 */
 	@BeforeClass
 	public static void initLog() {
-		TestUtilisateurDAO.utilisateurDao = new UtilisateurDAO();
+		context = new ClassPathXmlApplicationContext("spring/*-context.xml");
+		TestUtilisateurDAO.utilisateurDao = context.getBean(IUtilisateurDAO.class);
+	}
+
+	@AfterClass
+	public static void endTest() {
+		LOG.info("endTest");
+		if (context != null) {
+			context.close();
+		}
 	}
 
 	/**

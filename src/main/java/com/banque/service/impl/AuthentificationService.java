@@ -25,7 +25,11 @@ public class AuthentificationService extends AbstractService implements IAuthent
 	 */
 	public AuthentificationService() {
 		super();
-		this.utilisateurDAO = new UtilisateurDAO();
+	}
+
+	public AuthentificationService(IUtilisateurDAO utilisateurDAO) {
+		super();
+		this.utilisateurDAO = utilisateurDAO;
 	}
 
 	/**

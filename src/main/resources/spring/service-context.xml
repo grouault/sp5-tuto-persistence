@@ -3,8 +3,20 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<!-- Chargement du fichier de properties dans le contexte Spring -->
 	<!-- Declaration de notre configuration service parent -->
+	<bean id="abstractService" class="com.banque.service.impl.AbstractService" abstract="true"/>
 
 	<!-- Declaration de nos services et mise en place des liens avec les DAO -->
+	<bean id="authentificationService" class="com.banque.service.impl.AuthentificationService" parent="abstractService">
+		<constructor-arg name="utilisateurDAO" ref="utilisateurDAO"></constructor-arg>
+	</bean>
+	<bean id="compteService" class="com.banque.service.impl.CompteService" parent="abstractService">
+		<constructor-arg name="compteDAO" ref="compteDAO"></constructor-arg>
+	</bean>
+	<bean id="operationService" class="com.banque.service.impl.OperationService" parent="abstractService">
+		<constructor-arg name="operationDAO" ref="operationDAO"></constructor-arg>
+		<constructor-arg name="compteDAO" ref="compteDAO"></constructor-arg>
+	</bean>
 
 </beans>

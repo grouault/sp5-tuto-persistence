@@ -1,9 +1,12 @@
 package com.banque.service.impl;
 
+import com.banque.dao.ICompteDAO;
+import com.banque.dao.impl.TestCompteDAO;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +15,7 @@ import com.banque.entity.ICompteEntity;
 import com.banque.service.ICompteService;
 import com.banque.service.ex.AucunDroitException;
 import com.banque.service.ex.EntityIntrouvableException;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Test sur la classe ICompteService.
@@ -21,13 +25,24 @@ public class TestCompteService {
 
 	private static ICompteService compteService;
 
+	private static ClassPathXmlApplicationContext context = null;
+
 	/**
 	 * Initialisation du log. <br/>
 	 * Appele au demarrage de tous les tests.
 	 */
 	@BeforeClass
 	public static void initLog() {
-		TestCompteService.compteService = new CompteService();
+		context = new ClassPathXmlApplicationContext("spring/*-context.xml");
+		TestCompteService.compteService = context.getBean(ICompteService.class);
+	}
+
+	@AfterClass
+	public static void endTest() {
+		LOG.info("endTest");
+		if (context != null) {
+			context.close();
+		}
 	}
 
 	/**

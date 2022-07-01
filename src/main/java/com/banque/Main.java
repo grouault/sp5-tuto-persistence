@@ -14,6 +14,7 @@ import com.banque.service.IOperationService;
 import com.banque.service.impl.AuthentificationService;
 import com.banque.service.impl.CompteService;
 import com.banque.service.impl.OperationService;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Exemple.
@@ -38,17 +39,20 @@ public final class Main {
 	public static void main(String[] args) {
 		Main.LOG.info("-- Debut -- ");
 
+		ClassPathXmlApplicationContext context = null;
 		try {
-			// On instancie le service authentification afin de recuperer un
-			// utilisateur
-			IAuthentificationService serviceAuth = new AuthentificationService();
+			context = new ClassPathXmlApplicationContext("spring/*-context.xml");
+
+			// recuperation d'un utilisateur via Spring
+			IAuthentificationService serviceAuth =  context.getBean(IAuthentificationService.class);
 			IUtilisateurEntity utilisateur = serviceAuth.authentifier("dj", "dj");
 			Main.LOG.info("Bonjour {} {}", utilisateur.getNom(), utilisateur.getPrenom());
-			// On instancie le service de gestion des comptes pour recuperer la
+
 			// liste de ses comptes
-			ICompteService serviceCpt = new CompteService();
+			ICompteService serviceCpt = context.getBean(ICompteService.class);
 			List<ICompteEntity> listeCpts = serviceCpt.selectAll(utilisateur.getId().intValue());
 			Main.LOG.info("Vous avez {} comptes", String.valueOf(listeCpts.size()));
+
 			// On prend deux id de comptes pour faire un virement
 			Integer[] deuxId = new Integer[2];
 			int id = 0;
@@ -59,14 +63,18 @@ public final class Main {
 				id++;
 			}
 
-			// On Effectue un virement entre deux comptes, via le service des
-			// operations
-			IOperationService serviceOp = new OperationService();
+			// realisation du virement
+			IOperationService serviceOp = context.getBean(IOperationService.class);
 			serviceOp.faireVirement(utilisateur.getId().intValue(), deuxId[0].intValue(), deuxId[1].intValue(), 5D);
 			Main.LOG.info("Votre virement s'est bien effectue");
+
 		} catch (Exception e) {
 			Main.LOG.fatal("Erreur", e);
 			System.exit(-1);
+		} finally {
+			if (context != null) {
+				context.close();
+			}
 		}
 		Main.LOG.info("-- Fin -- ");
 		System.exit(0);

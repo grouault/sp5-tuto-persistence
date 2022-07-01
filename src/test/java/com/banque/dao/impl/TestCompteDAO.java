@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import com.banque.dao.ICompteDAO;
 import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.ICompteEntity;
 import com.banque.entity.impl.CompteEntity;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Test sur la classe CompteDAO.
@@ -21,13 +23,24 @@ public class TestCompteDAO {
 
 	private static ICompteDAO compteDao;
 
+	private static ClassPathXmlApplicationContext context = null;
+
 	/**
 	 * Initialisation du log. <br/>
 	 * Appele au demarrage de tous les tests.
 	 */
 	@BeforeClass
 	public static void initLog() {
-		TestCompteDAO.compteDao = new CompteDAO();
+		context = new ClassPathXmlApplicationContext("spring/*-context.xml");
+		TestCompteDAO.compteDao = context.getBean(ICompteDAO.class);
+	}
+
+	@AfterClass
+	public static void endTest() {
+		LOG.info("endTest");
+		if (context != null) {
+			context.close();
+		}
 	}
 
 	/**

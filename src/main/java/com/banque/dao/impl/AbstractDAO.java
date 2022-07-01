@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +28,8 @@ import com.banque.entity.IEntity;
 public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 
 	private static final Logger LOG = LogManager.getLogger();
+
+	private Properties dataBaseConfig;
 
 	/**
 	 * Constructeur de l'objet.
@@ -328,14 +331,18 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 	@Override
 	public final Connection getConnexion() throws ExceptionDao {
 		try {
-			Class.forName(IDAO.DB_DRIVER);
+			Class.forName(dataBaseConfig.getProperty("bdd.driver"));
 		} catch (Exception e) {
 			AbstractDAO.LOG.error("Impossible de charger le driver pour la base", e);
 			throw new ExceptionDao(e);
 		}
 
 		try {
-			return DriverManager.getConnection(IDAO.DB_URL, IDAO.DB_LOGIN, IDAO.DB_PWD);
+			return DriverManager.getConnection(
+				dataBaseConfig.getProperty("bdd.url"),
+				dataBaseConfig.getProperty("bdd.login"),
+				dataBaseConfig.getProperty("bdd.pwd")
+			);
 		} catch (SQLException e) {
 			AbstractDAO.LOG.error("Erreur lors de l'acces a la base", e);
 			throw new ExceptionDao(e);
@@ -378,6 +385,14 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 			}
 
 		}
+	}
+
+	public Properties getDataBaseConfig() {
+		return dataBaseConfig;
+	}
+
+	public void setDataBaseConfig(Properties dataBaseConfig) {
+		this.dataBaseConfig = dataBaseConfig;
 	}
 
 }

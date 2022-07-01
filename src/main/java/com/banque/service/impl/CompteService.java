@@ -28,7 +28,11 @@ public class CompteService extends AbstractService implements ICompteService {
 	 */
 	public CompteService() {
 		super();
-		this.compteDao = new CompteDAO();
+	}
+
+	public CompteService(ICompteDAO compteDAO) {
+		super();
+		this.compteDao = compteDAO;
 	}
 
 	/**

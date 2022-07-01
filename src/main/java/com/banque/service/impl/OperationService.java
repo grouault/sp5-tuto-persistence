@@ -39,8 +39,12 @@ public class OperationService extends AbstractService implements IOperationServi
 	 */
 	public OperationService() {
 		super();
-		this.operationDao = new OperationDAO();
-		this.compteDao = new CompteDAO();
+	}
+
+	public OperationService(IOperationDAO operationDAO, ICompteDAO compteDAO) {
+		super();
+		this.operationDao = operationDAO;
+		this.compteDao = compteDAO;
 	}
 
 	/**
