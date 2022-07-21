@@ -16,6 +16,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Repository;
  *            Un type d'entite
  */
 @Repository
+@PropertySource("classpath:spring/database.properties")
 public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 
 	private static final Logger LOG = LogManager.getLogger();

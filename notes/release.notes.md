@@ -1,5 +1,10 @@
 ## release notes
 
+### exo8 : annotation_v0_@propertySource
+- chargement du properties dans la classe via l'annotation @propertySource
+- injection des valeurs par annotation: @Value
+- seule configuration xml : Scan des annotations
+
 ### exo8 : annotation_v0_xml_contextPropertyPlaceHolder
 - chargement du properties en xml via un propertyPlaceHolder
 - injection des valeurs par annotation: @Value

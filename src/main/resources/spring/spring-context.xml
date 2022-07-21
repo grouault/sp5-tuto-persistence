@@ -5,9 +5,6 @@
           xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- chargement du Properties -->
-    <context:property-placeholder location="classpath:spring/database.properties" />
-
     <!--
         scan pour
            - la creation des beans à l'exterieur de la classe
