@@ -1,5 +1,8 @@
 package com.banque.dao.impl;
 
+import com.banque.dao.IDAO;
+import com.banque.dao.ex.ExceptionDao;
+import com.banque.entity.IEntity;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,16 +13,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.banque.dao.IDAO;
-import com.banque.dao.ex.ExceptionDao;
-import com.banque.entity.IEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -33,9 +29,17 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	@Autowired
-	@Qualifier("dataBaseProperties")
-	private Properties dataBaseConfig;
+	@Value("${bdd.driver}")
+	private String bddDriver;
+
+	@Value("${bdd.url}")
+	private String bddUrl;
+
+	@Value("${bdd.login}")
+	private String bddLogin;
+
+	@Value("${bdd.pwd}")
+	private String bddPwd;
 
 	/**
 	 * Constructeur de l'objet.
@@ -337,18 +341,14 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 	@Override
 	public final Connection getConnexion() throws ExceptionDao {
 		try {
-			Class.forName(dataBaseConfig.getProperty("bdd.driver"));
+			Class.forName(this.bddDriver);
 		} catch (Exception e) {
 			AbstractDAO.LOG.error("Impossible de charger le driver pour la base", e);
 			throw new ExceptionDao(e);
 		}
 
 		try {
-			return DriverManager.getConnection(
-				dataBaseConfig.getProperty("bdd.url"),
-				dataBaseConfig.getProperty("bdd.login"),
-				dataBaseConfig.getProperty("bdd.pwd")
-			);
+			return DriverManager.getConnection(this.bddUrl, this.bddLogin, this.bddPwd);
 		} catch (SQLException e) {
 			AbstractDAO.LOG.error("Erreur lors de l'acces a la base", e);
 			throw new ExceptionDao(e);
@@ -393,12 +393,8 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 		}
 	}
 
-	public Properties getDataBaseConfig() {
-		return dataBaseConfig;
-	}
-
-	public void setDataBaseConfig(Properties dataBaseConfig) {
-		this.dataBaseConfig = dataBaseConfig;
+	public void setBddDriver(String bddDriver) {
+		this.bddDriver = bddDriver;
 	}
 
 }

@@ -6,9 +6,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- chargement du Properties -->
-    <bean id="dataBaseProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="location" value="spring/database.properties" />
-    </bean>
+    <context:property-placeholder location="classpath:spring/database.properties" />
 
     <!--
         scan pour

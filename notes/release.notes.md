@@ -1,6 +1,10 @@
 ## release notes
 
-### exo8-annotation_v0_propertiesFactoryBean
+### exo8 : annotation_v0_xml_contextPropertyPlaceHolder
+- chargement du properties en xml via un propertyPlaceHolder
+- injection des valeurs par annotation: @Value
+
+### exo8 : annotation_v0_propertiesFactoryBean
 - mise en place des annotations
   - annotation: @Repository, @Service 
   - injection par les constructeurs : @Autowired
