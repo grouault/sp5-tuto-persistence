@@ -14,17 +14,6 @@ import com.banque.entity.IEntity;
  *            Un type d'entite.
  */
 public interface IDAO<T extends IEntity> {
-	/** Driver SQL. */
-	public static final String DB_DRIVER = "com.mysql.jdbc.Driver";
-	/**
-	 * URL de la base de donnees. En MySQL >= 5.7 les options evitent un
-	 * warning.
-	 */
-	public static final String DB_URL = "jdbc:mysql://localhost/banque?useSSL=false";
-	/** Login de la base. */
-	public static final String DB_LOGIN = "root";
-	/** Password de la base. */
-	public static final String DB_PWD = "gildas";
 
 	/**
 	 * Ajoute un element dans la base.
