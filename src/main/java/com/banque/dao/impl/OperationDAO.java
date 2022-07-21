@@ -16,10 +16,12 @@ import com.banque.dao.IOperationDAO;
 import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.IOperationEntity;
 import com.banque.entity.impl.OperationEntity;
+import org.springframework.stereotype.Component;
 
 /**
  * Gestion des operations.
  */
+@Component
 public class OperationDAO extends AbstractDAO<IOperationEntity> implements IOperationDAO {
 	private static final Logger LOG = LogManager.getLogger();
 

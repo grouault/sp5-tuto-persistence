@@ -13,10 +13,12 @@ import org.apache.logging.log4j.Logger;
 import com.banque.dao.ICompteDAO;
 import com.banque.entity.ICompteEntity;
 import com.banque.entity.impl.CompteEntity;
+import org.springframework.stereotype.Component;
 
 /**
  * Gestion des comptes.
  */
+@Component
 public class CompteDAO extends AbstractDAO<ICompteEntity> implements ICompteDAO {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LogManager.getLogger();

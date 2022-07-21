@@ -18,6 +18,9 @@ import org.apache.logging.log4j.Logger;
 import com.banque.dao.IDAO;
 import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.IEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 /**
  * DAO abstrait.
@@ -25,10 +28,13 @@ import com.banque.entity.IEntity;
  * @param <T>
  *            Un type d'entite
  */
+@Repository
 public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
+	@Autowired
+	@Qualifier("dataBaseProperties")
 	private Properties dataBaseConfig;
 
 	/**

@@ -25,13 +25,18 @@ import com.banque.service.ex.DecouvertException;
 import com.banque.service.ex.EntityIntrouvableException;
 import com.banque.service.ex.ErreurTechniqueException;
 import com.banque.service.ex.FonctionnelleException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Gestion des operations.
  */
+@Service
 public class OperationService extends AbstractService implements IOperationService {
 	private static final Logger LOG = LogManager.getLogger();
+
 	private IOperationDAO operationDao;
+
 	private ICompteDAO compteDao;
 
 	/**
@@ -41,6 +46,7 @@ public class OperationService extends AbstractService implements IOperationServi
 		super();
 	}
 
+	@Autowired
 	public OperationService(IOperationDAO operationDAO, ICompteDAO compteDAO) {
 		super();
 		this.operationDao = operationDAO;

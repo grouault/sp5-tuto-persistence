@@ -15,10 +15,12 @@ import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.ESex;
 import com.banque.entity.IUtilisateurEntity;
 import com.banque.entity.impl.UtilisateurEntity;
+import org.springframework.stereotype.Component;
 
 /**
  * Gestion des utilisateurs.
  */
+@Component
 public class UtilisateurDAO extends AbstractDAO<IUtilisateurEntity> implements IUtilisateurDAO {
 	private static final Logger LOG = LogManager.getLogger();
 

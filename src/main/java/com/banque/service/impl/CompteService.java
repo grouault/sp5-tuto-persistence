@@ -15,12 +15,16 @@ import com.banque.service.ex.AucunDroitException;
 import com.banque.service.ex.EntityIntrouvableException;
 import com.banque.service.ex.ErreurTechniqueException;
 import com.banque.service.ex.FonctionnelleException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Gestion des comptes.
  */
+@Service
 public class CompteService extends AbstractService implements ICompteService {
 	private static final Logger LOG = LogManager.getLogger();
+
 	private ICompteDAO compteDao;
 
 	/**
@@ -30,6 +34,7 @@ public class CompteService extends AbstractService implements ICompteService {
 		super();
 	}
 
+	@Autowired
 	public CompteService(ICompteDAO compteDAO) {
 		super();
 		this.compteDao = compteDAO;

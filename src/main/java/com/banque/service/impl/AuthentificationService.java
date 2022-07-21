@@ -12,12 +12,16 @@ import com.banque.service.ex.ErreurTechniqueException;
 import com.banque.service.ex.FonctionnelleException;
 import com.banque.service.ex.MauvaisMotdepasseException;
 import com.banque.service.ex.UtilisateurInconnuException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Gestion de l'authentification.
  */
+@Service
 public class AuthentificationService extends AbstractService implements IAuthentificationService {
 	private static final Logger LOG = LogManager.getLogger();
+
 	private IUtilisateurDAO utilisateurDAO;
 
 	/**
@@ -27,6 +31,7 @@ public class AuthentificationService extends AbstractService implements IAuthent
 		super();
 	}
 
+	@Autowired
 	public AuthentificationService(IUtilisateurDAO utilisateurDAO) {
 		super();
 		this.utilisateurDAO = utilisateurDAO;
