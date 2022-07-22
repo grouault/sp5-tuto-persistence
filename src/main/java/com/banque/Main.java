@@ -14,11 +14,14 @@ import com.banque.service.IOperationService;
 import com.banque.service.impl.AuthentificationService;
 import com.banque.service.impl.CompteService;
 import com.banque.service.impl.OperationService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Exemple.
  */
+@ComponentScan("com.banque")
 public final class Main {
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -39,9 +42,9 @@ public final class Main {
 	public static void main(String[] args) {
 		Main.LOG.info("-- Debut -- ");
 
-		ClassPathXmlApplicationContext context = null;
+		AnnotationConfigApplicationContext context = null;
 		try {
-			context = new ClassPathXmlApplicationContext("spring/*-context.xml");
+			context = new AnnotationConfigApplicationContext(Main.class);
 
 			// recuperation d'un utilisateur via Spring
 			IAuthentificationService serviceAuth =  context.getBean(IAuthentificationService.class);

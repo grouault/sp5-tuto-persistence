@@ -1,5 +1,9 @@
 ## release notes
 
+### exo8 : annotation_v0_AnnotationConfigApplicationContext
+- chargement de la config à partir de la classe Main.java
+- utilisation de l'annotation @ComponentScan
+
 ### exo8 : annotation_v0_@propertySource
 - chargement du properties dans la classe via l'annotation @propertySource
 - injection des valeurs par annotation: @Value
