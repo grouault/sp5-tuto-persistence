@@ -21,7 +21,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * Exemple.
  */
-@ComponentScan("com.banque")
 public final class Main {
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -42,9 +41,9 @@ public final class Main {
 	public static void main(String[] args) {
 		Main.LOG.info("-- Debut -- ");
 
-		AnnotationConfigApplicationContext context = null;
+		ClassPathXmlApplicationContext context = null;
 		try {
-			context = new AnnotationConfigApplicationContext(Main.class);
+			context = new ClassPathXmlApplicationContext("spring/*-context.xml");
 
 			// recuperation d'un utilisateur via Spring
 			IAuthentificationService serviceAuth =  context.getBean(IAuthentificationService.class);

@@ -1,5 +1,12 @@
 ## release notes
 
+### exo9 : AOP
+- configuration d'un Aspect : LogAspect
+- ajout de dépendance AspectJ dans le pom.xml
+- réactivation du fichier spring-context.xml
+  - activation du scan des annotation
+  - activation des aspects
+
 ### exo8 : annotation_v0_AnnotationConfigApplicationContext
 - chargement de la config à partir de la classe Main.java
 - utilisation de l'annotation @ComponentScan
