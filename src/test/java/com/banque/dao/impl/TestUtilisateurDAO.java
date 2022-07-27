@@ -74,7 +74,7 @@ public class TestUtilisateurDAO {
 
 		IUtilisateurEntity unUt2 = null;
 		try {
-			unUt2 = TestUtilisateurDAO.utilisateurDao.insert(unUt1, null);
+			unUt2 = TestUtilisateurDAO.utilisateurDao.insert(unUt1);
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -99,7 +99,7 @@ public class TestUtilisateurDAO {
 		unUt1.setSex(ESex.HOMME);
 
 		try {
-			unUt1 = TestUtilisateurDAO.utilisateurDao.insert(unUt1, null);
+			unUt1 = TestUtilisateurDAO.utilisateurDao.insert(unUt1);
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -110,7 +110,7 @@ public class TestUtilisateurDAO {
 		unUt1.setNom("Test is back");
 		IUtilisateurEntity unUt2 = null;
 		try {
-			unUt2 = TestUtilisateurDAO.utilisateurDao.update(unUt1, null);
+			unUt2 = TestUtilisateurDAO.utilisateurDao.update(unUt1);
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -136,7 +136,7 @@ public class TestUtilisateurDAO {
 		unUt1.setSex(ESex.HOMME);
 
 		try {
-			unUt1 = TestUtilisateurDAO.utilisateurDao.insert(unUt1, null);
+			unUt1 = TestUtilisateurDAO.utilisateurDao.insert(unUt1);
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -146,7 +146,7 @@ public class TestUtilisateurDAO {
 
 		boolean resu = false;
 		try {
-			resu = TestUtilisateurDAO.utilisateurDao.delete(unUt1, null);
+			resu = TestUtilisateurDAO.utilisateurDao.delete(unUt1);
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -162,7 +162,7 @@ public class TestUtilisateurDAO {
 		IUtilisateurEntity unUt1 = null;
 		try {
 			// le login df existe
-			unUt1 = TestUtilisateurDAO.utilisateurDao.selectLogin("df", null);
+			unUt1 = TestUtilisateurDAO.utilisateurDao.selectLogin("df");
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -180,7 +180,7 @@ public class TestUtilisateurDAO {
 		List<IUtilisateurEntity> liste = null;
 		IUtilisateurEntity unUt1 = null;
 		try {
-			liste = TestUtilisateurDAO.utilisateurDao.selectAll("nom='Fargis'", null, null);
+			liste = TestUtilisateurDAO.utilisateurDao.selectAll("nom='Fargis'", null);
 			unUt1 = liste.get(0);
 		} catch (ExceptionDao e) {
 			TestUtilisateurDAO.LOG.error("Erreur", e);

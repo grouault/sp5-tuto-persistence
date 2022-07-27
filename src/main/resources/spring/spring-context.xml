@@ -13,8 +13,24 @@
 
     <!-- prise en compte de la config -->
     <context:component-scan base-package="com.banque" />
+    <context:property-placeholder location="classpath:spring/database.properties" />
 
     <!-- prise en compte des aspects -->
     <aop:aspectj-autoproxy/>
+
+    <!-- dataSource -->
+    <bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${bdd.driver}"/>
+        <property name="url" value="${bdd.url}"/>
+        <property name="username" value="${bdd.login}"/>
+        <property name="password" value="${bdd.pwd}"/>
+        <property name="initialSize" value="2" />
+        <property name="maxIdle" value="5" />
+    </bean>
+
+    <!-- spring-jdbc -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
 </beans>

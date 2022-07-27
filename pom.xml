@@ -44,6 +44,7 @@
     <version.log4j2>2.9.0</version.log4j2>
     <!-- version.mysql>5.1.44</version.mysql -->
     <version.mysql>8.0.13</version.mysql>
+    <version.dbcp2>2.1.1</version.dbcp2>
 
     <!-- https://maven.apache.org/plugins/index.html -->
     <maven-compiler-plugin-version>3.7.0</maven-compiler-plugin-version>
@@ -200,6 +201,23 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+    </dependency>
+
+    <!-- dataSource -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-dbcp2</artifactId>
+      <version>${version.dbcp2}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
     </dependency>
 
     <dependency>

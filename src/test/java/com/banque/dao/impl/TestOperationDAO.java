@@ -57,7 +57,7 @@ public class TestOperationDAO {
 		uneOp1.setMontant(Double.valueOf(500D));
 		IOperationEntity uneOp2 = null;
 		try {
-			uneOp2 = TestOperationDAO.operationDao.insert(uneOp1, null);
+			uneOp2 = TestOperationDAO.operationDao.insert(uneOp1);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -81,7 +81,7 @@ public class TestOperationDAO {
 		uneOp1.setMontant(Double.valueOf(500D));
 
 		try {
-			uneOp1 = TestOperationDAO.operationDao.insert(uneOp1, null);
+			uneOp1 = TestOperationDAO.operationDao.insert(uneOp1);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -92,7 +92,7 @@ public class TestOperationDAO {
 		uneOp1.setLibelle("Op1 de test bis");
 		IOperationEntity uneOp2 = null;
 		try {
-			uneOp2 = TestOperationDAO.operationDao.update(uneOp1, null);
+			uneOp2 = TestOperationDAO.operationDao.update(uneOp1);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -116,7 +116,7 @@ public class TestOperationDAO {
 		uneOp1.setMontant(Double.valueOf(500D));
 
 		try {
-			uneOp1 = TestOperationDAO.operationDao.insert(uneOp1, null);
+			uneOp1 = TestOperationDAO.operationDao.insert(uneOp1);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -125,7 +125,7 @@ public class TestOperationDAO {
 		Assert.assertNotNull("L'operation doit avoir un id non null", uneOp1.getId());
 		boolean resu = false;
 		try {
-			resu = TestOperationDAO.operationDao.delete(uneOp1, null);
+			resu = TestOperationDAO.operationDao.delete(uneOp1);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -140,7 +140,7 @@ public class TestOperationDAO {
 	public void selectOk() {
 		IOperationEntity uneOp1 = null;
 		try {
-			uneOp1 = TestOperationDAO.operationDao.select(1, null);
+			uneOp1 = TestOperationDAO.operationDao.select(1);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -157,7 +157,7 @@ public class TestOperationDAO {
 		List<IOperationEntity> liste = null;
 		IOperationEntity uneOp1 = null;
 		try {
-			liste = TestOperationDAO.operationDao.selectAll("id=1", null, null);
+			liste = TestOperationDAO.operationDao.selectAll("id=1", null);
 			uneOp1 = liste.get(0);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
@@ -176,7 +176,7 @@ public class TestOperationDAO {
 	public void selectCriteriaOk() {
 		List<IOperationEntity> liste = null;
 		try {
-			liste = TestOperationDAO.operationDao.selectCriteria(12, null, null, null, null);
+			liste = TestOperationDAO.operationDao.selectCriteria(12, null, null, null);
 		} catch (ExceptionDao e) {
 			TestOperationDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());

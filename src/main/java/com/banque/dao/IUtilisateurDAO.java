@@ -21,6 +21,6 @@ public interface IUtilisateurDAO extends IDAO<IUtilisateurEntity> {
 	 * @throws ExceptionDao
 	 *             si une erreur survient
 	 */
-	public abstract IUtilisateurEntity selectLogin(String pLogin, Connection connexion) throws ExceptionDao;
+	public abstract IUtilisateurEntity selectLogin(String pLogin) throws ExceptionDao;
 
 }

@@ -1,5 +1,6 @@
 package com.banque.dao.impl;
 
+import com.banque.dao.util.CompteJdbcMapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import com.banque.dao.ICompteDAO;
 import com.banque.entity.ICompteEntity;
 import com.banque.entity.impl.CompteEntity;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,32 +40,6 @@ public class CompteDAO extends AbstractDAO<ICompteEntity> implements ICompteDAO 
 	@Override
 	protected String getAllColumnNames() {
 		return "id,libelle,solde,decouvert,taux,utilisateurId";
-	}
-
-	@Override
-	protected ICompteEntity fromResultSet(ResultSet rs) throws SQLException {
-		ICompteEntity result = new CompteEntity();
-		result.setId(Integer.valueOf(rs.getInt("id")));
-		result.setLibelle(rs.getString("libelle"));
-		result.setSolde(Double.valueOf(rs.getDouble("solde")));
-		result.setUtilisateurId(Integer.valueOf(rs.getInt("utilisateurId")));
-		double vd = rs.getDouble("decouvert");
-		// Le decouvert etait-il null ?
-		boolean dnull = rs.wasNull();
-		double vt = rs.getDouble("taux");
-		// Le taux etait-il null ?
-		boolean tnull = rs.wasNull();
-		if (!dnull) {
-			result.setDecouvert(Double.valueOf(vd));
-		} else {
-			result.setDecouvert(null);
-		}
-		if (!tnull) {
-			result.setTaux(Double.valueOf(vt));
-		} else {
-			result.setTaux(null);
-		}
-		return result;
 	}
 
 	@Override
@@ -109,6 +85,11 @@ public class CompteDAO extends AbstractDAO<ICompteEntity> implements ICompteDAO 
 		ps.setInt(5, pUneEntite.getUtilisateurId().intValue());
 		ps.setInt(6, pUneEntite.getId().intValue());
 		return ps;
+	}
+
+	@Override
+	protected RowMapper<ICompteEntity> getMapper() {
+		return new CompteJdbcMapper();
 	}
 
 }

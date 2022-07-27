@@ -1,5 +1,6 @@
 package com.banque.dao.impl;
 
+import com.banque.dao.util.UtilisateurJdbcMapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,8 @@ import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.ESex;
 import com.banque.entity.IUtilisateurEntity;
 import com.banque.entity.impl.UtilisateurEntity;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,41 +42,6 @@ public class UtilisateurDAO extends AbstractDAO<IUtilisateurEntity> implements I
 	@Override
 	protected String getAllColumnNames() {
 		return "id,nom,prenom,login,password,sex,derniereConnection,dateDeNaissance,adresse,codePostal,telephone";
-	}
-
-	@Override
-	protected IUtilisateurEntity fromResultSet(ResultSet rs) throws SQLException {
-		IUtilisateurEntity result = new UtilisateurEntity();
-		result.setId(Integer.valueOf(rs.getInt("id")));
-		result.setNom(rs.getString("nom"));
-		result.setPrenom(rs.getString("prenom"));
-		result.setLogin(rs.getString("login"));
-		result.setPassword(rs.getString("password"));
-		// Gestion de l'enumeration
-		byte sex = rs.getByte("sex");
-		switch (sex) {
-		case 0:
-			result.setSex(ESex.HOMME);
-			break;
-		case 1:
-			result.setSex(ESex.FEMME);
-			break;
-		default:
-			UtilisateurDAO.LOG.warn("Sex a une valeur surprenante (" + sex + ")");
-			result.setSex(ESex.AUTRE);
-			break;
-		}
-		result.setDerniereConnection(rs.getTimestamp("derniereConnection"));
-		result.setAdresse(rs.getString("adresse"));
-		int cp = rs.getInt("codePostal");
-		if (rs.wasNull()) {
-			result.setCodePostal(null);
-		} else {
-			result.setCodePostal(Integer.valueOf(cp));
-		}
-		result.setTelephone(rs.getString("telephone"));
-		result.setDateDeNaissance(rs.getDate("dateDeNaissance"));
-		return result;
 	}
 
 	@Override
@@ -139,31 +107,24 @@ public class UtilisateurDAO extends AbstractDAO<IUtilisateurEntity> implements I
 	}
 
 	@Override
-	public IUtilisateurEntity selectLogin(String pLogin, Connection connexion) throws ExceptionDao {
+	protected RowMapper<IUtilisateurEntity> getMapper() {
+		return new UtilisateurJdbcMapper();
+	}
+
+	@Override
+	public IUtilisateurEntity selectLogin(String pLogin) throws ExceptionDao {
 		IUtilisateurEntity result = null;
 		UtilisateurDAO.LOG.debug("selectLogin sur {} pLogin={}", this.getClass(), pLogin);
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		boolean connexionCreated = connexion == null;
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setReadOnly(true);
-			}
-			String request = "select " + this.getAllColumnNames() + " from " + this.getTableName() + " where login=?;";
-			ps = connexion.prepareStatement(request);
-			ps.setString(1, pLogin);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				result = this.fromResultSet(rs);
-			}
+			String sql = "select " + this.getAllColumnNames() + " from " + this.getTableName() + " where login=?;";
+			result = this.getJdbcTemplate().queryForObject(sql, this.getMapper(), pLogin);
+
+		} catch (EmptyResultDataAccessException ex) {
+			return  result;
 		} catch (Exception e) {
 			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, true, ps, rs, connexion);
 		}
 		return result;
-
 	}
 
 }

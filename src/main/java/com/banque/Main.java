@@ -14,6 +14,7 @@ import com.banque.service.IOperationService;
 import com.banque.service.impl.AuthentificationService;
 import com.banque.service.impl.CompteService;
 import com.banque.service.impl.OperationService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -41,7 +42,7 @@ public final class Main {
 	public static void main(String[] args) {
 		Main.LOG.info("-- Debut -- ");
 
-		ClassPathXmlApplicationContext context = null;
+		ApplicationContext context = null;
 		try {
 			context = new ClassPathXmlApplicationContext("spring/*-context.xml");
 
@@ -75,7 +76,7 @@ public final class Main {
 			System.exit(-1);
 		} finally {
 			if (context != null) {
-				context.close();
+				((ClassPathXmlApplicationContext)context).close();
 			}
 		}
 		Main.LOG.info("-- Fin -- ");

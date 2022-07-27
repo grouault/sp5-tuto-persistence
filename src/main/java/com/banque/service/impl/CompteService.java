@@ -62,7 +62,7 @@ public class CompteService extends AbstractService implements ICompteService {
 		}
 		ICompteEntity resultat = null;
 		try {
-			resultat = this.getCompteDao().select(unCompteId, null);
+			resultat = this.getCompteDao().select(unCompteId);
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}
@@ -85,7 +85,7 @@ public class CompteService extends AbstractService implements ICompteService {
 		}
 		List<ICompteEntity> resultat = new ArrayList<ICompteEntity>();
 		try {
-			resultat = this.getCompteDao().selectAll("utilisateurId=" + unUtilisateurId, "libelle ASC", null);
+			resultat = this.getCompteDao().selectAll("utilisateurId=" + unUtilisateurId, "libelle ASC");
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}

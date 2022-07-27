@@ -58,7 +58,7 @@ public class AuthentificationService extends AbstractService implements IAuthent
 		}
 		IUtilisateurEntity resultat = null;
 		try {
-			resultat = this.getUtilisateurDAO().selectLogin(pLogin, null);
+			resultat = this.getUtilisateurDAO().selectLogin(pLogin);
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}

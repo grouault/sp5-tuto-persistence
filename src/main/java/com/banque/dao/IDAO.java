@@ -26,7 +26,7 @@ public interface IDAO<T extends IEntity> {
 	 * @throws ExceptionDao
 	 *             en cas de probleme
 	 */
-	public abstract T insert(T pUneEntite, Connection connexion) throws ExceptionDao;
+	public abstract T insert(T pUneEntite) throws ExceptionDao;
 
 	/**
 	 * Met un element a jour dans la base.
@@ -39,7 +39,7 @@ public interface IDAO<T extends IEntity> {
 	 * @throws ExceptionDao
 	 *             en cas de probleme
 	 */
-	public abstract T update(T pUneEntite, Connection connexion) throws ExceptionDao;
+	public abstract T update(T pUneEntite) throws ExceptionDao;
 
 	/**
 	 * Suprime un compte de la base.
@@ -52,20 +52,18 @@ public interface IDAO<T extends IEntity> {
 	 * @throws ExceptionDao
 	 *             en cas de probleme
 	 */
-	public abstract boolean delete(T pUneEntite, Connection connexion) throws ExceptionDao;
+	public abstract boolean delete(T pUneEntite) throws ExceptionDao;
 
 	/**
 	 * Selectionne un compte dans la base en fonction de sa clef.
 	 *
 	 * @param pUneClef
 	 *            une clef
-	 * @param connexion
-	 *            une connection
 	 * @return l'objet compte trouve, null sinon
 	 * @throws ExceptionDao
 	 *             en cas de probleme
 	 */
-	public abstract T select(int pUneClef, Connection connexion) throws ExceptionDao;
+	public abstract T select(int pUneClef) throws ExceptionDao;
 
 	/**
 	 * Selectionne tous les comptes dans la base.
@@ -74,20 +72,11 @@ public interface IDAO<T extends IEntity> {
 	 *            une condition where (sans le mot clef where)
 	 * @param pAnOrderBy
 	 *            une condition d'order by (sans le mot clef order by)
-	 * @param connexion
-	 *            une connection
 	 * @return la liste des comptes trouves, une liste vide sinon
 	 * @throws ExceptionDao
 	 *             en cas de probleme
 	 */
-	public abstract List<T> selectAll(String pAWhere, String pAnOrderBy, Connection connexion) throws ExceptionDao;
+	public abstract List<T> selectAll(String pAWhere, String pAnOrderBy) throws ExceptionDao;
 
-	/**
-	 * Recupere une connexion
-	 *
-	 * @return une connexion
-	 * @throws ExceptionDao
-	 */
-	public abstract Connection getConnexion() throws ExceptionDao;
 
 }

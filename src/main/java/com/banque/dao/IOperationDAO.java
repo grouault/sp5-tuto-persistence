@@ -32,6 +32,6 @@ public interface IOperationDAO extends IDAO<IOperationEntity> {
 	 *
 	 */
 	public abstract List<IOperationEntity> selectCriteria(int unCompteId, Date unDebut, Date uneFin,
-			Boolean pCreditDebit, Connection connexion) throws ExceptionDao;
+			Boolean pCreditDebit) throws ExceptionDao;
 
 }

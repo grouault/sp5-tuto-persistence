@@ -11,12 +11,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,22 +35,13 @@ import org.springframework.stereotype.Repository;
  *            Un type d'entite
  */
 @Repository
-@PropertySource("classpath:spring/database.properties")
+
 public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	@Value("${bdd.driver}")
-	private String bddDriver;
-
-	@Value("${bdd.url}")
-	private String bddUrl;
-
-	@Value("${bdd.login}")
-	private String bddLogin;
-
-	@Value("${bdd.pwd}")
-	private String bddPwd;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	/**
 	 * Constructeur de l'objet.
@@ -74,17 +74,6 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 	protected abstract String getAllColumnNames();
 
 	/**
-	 * Transforme un resultset en objet
-	 *
-	 * @param rs
-	 *            un resultset
-	 * @return un objet a partir du resultset
-	 * @throws SQLException
-	 *             si un probleme survient
-	 */
-	protected abstract T fromResultSet(ResultSet rs) throws SQLException;
-
-	/**
 	 * A la responsabilite de creer un statement qui servira pour l'insertion.
 	 *
 	 * @param pUneEntite
@@ -114,98 +103,34 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 			throws SQLException;
 
 	/**
-	 * Gere la fin de la transaction sur l'objet Connection.
-	 *
-	 * @param pConnexionCreated
-	 *            indique si la connection est nouvelle ou non
-	 * @param pDoCommit
-	 *            indique si il faut commiter ou pas
-	 * @param pStatement
-	 *            le statement
-	 * @param pResultSet
-	 *            le resultset
-	 * @param pConnexion
-	 *            la connection
+	 * permet de récupérer le rowMapper adequat
+	 * @return
 	 */
-	public static void handleTransaction(boolean pConnexionCreated, boolean pDoCommit, Statement pStatement,
-			ResultSet pResultSet, Connection pConnexion) {
-		if (pConnexionCreated && pConnexion != null) {
-			if (pDoCommit) {
-				AbstractDAO.LOG.debug("-- commit");
-				try {
-					if (!pConnexion.getAutoCommit()) {
-						pConnexion.commit();
-					}
-				} catch (SQLException e) {
-					AbstractDAO.LOG.error("Impossible de faire un commit!", e);
-				}
-			} else {
-				AbstractDAO.LOG.warn("-- rollback");
-				try {
-					if (!pConnexion.getAutoCommit()) {
-						pConnexion.rollback();
-					}
-				} catch (SQLException e) {
-					AbstractDAO.LOG.error("Impossible de faire un rollback!", e);
-				}
-			}
-		}
-		if (pResultSet != null) {
-			try {
-				pResultSet.close();
-			} catch (SQLException e) {
-				AbstractDAO.LOG.error("Impossible de fermer le resultset!", e);
-			}
-		}
-		if (pStatement != null) {
-			try {
-				pStatement.close();
-			} catch (SQLException e) {
-				AbstractDAO.LOG.error("Impossible de fermer le statement!", e);
-			}
-		}
-		if (pConnexionCreated && pConnexion != null) {
-			try {
-				pConnexion.close();
-			} catch (SQLException e) {
-				AbstractDAO.LOG.error("Impossible de fermer le connexion!", e);
-			}
-
-		}
-	}
+	protected abstract RowMapper<T> getMapper();
 
 	@Override
-	public T insert(T pUneEntite, Connection connexion) throws ExceptionDao {
+	public T insert(final T pUneEntite) throws ExceptionDao {
 		if (pUneEntite == null) {
 			return null;
 		}
 		AbstractDAO.LOG.debug("Insert {}", pUneEntite.getClass());
-		boolean doCommit = false;
-		boolean connexionCreated = connexion == null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setAutoCommit(false);
-			}
-			ps = this.buildStatementForInsert(pUneEntite, connexion);
-			ps.execute();
-			rs = ps.getGeneratedKeys();
-			if (rs.next()) {
-				pUneEntite.setId(Integer.valueOf(rs.getInt(1)));
-			}
-			doCommit = true;
+			KeyHolder kh = new GeneratedKeyHolder();
+			jdbcTemplate.update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return buildStatementForInsert(pUneEntite, connection);
+				}
+			}, kh);
+			pUneEntite.setId(Integer.valueOf(kh.getKey().intValue()));
 		} catch (Exception e) {
 			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, doCommit, ps, rs, connexion);
 		}
 		return pUneEntite;
 	}
 
 	@Override
-	public T update(T pUneEntite, Connection connexion) throws ExceptionDao {
+	public T update(final T pUneEntite) throws ExceptionDao {
 		if (pUneEntite == null) {
 			return null;
 		}
@@ -213,29 +138,21 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 		if (pUneEntite.getId() == null) {
 			throw new ExceptionDao("L'entite n'a pas d'ID");
 		}
-		boolean doCommit = false;
-		boolean connexionCreated = connexion == null;
-
-		PreparedStatement ps = null;
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setAutoCommit(false);
-			}
-
-			ps = this.buildStatementForUpdate(pUneEntite, connexion);
-			ps.execute();
-			doCommit = true;
+			this.getJdbcTemplate().update(new PreparedStatementCreator() {
+				@Override
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					return buildStatementForUpdate(pUneEntite, connection);
+				}
+			});
 		} catch (Exception e) {
 			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, doCommit, ps, null, connexion);
 		}
 		return pUneEntite;
 	}
 
 	@Override
-	public boolean delete(T pUneEntite, Connection connexion) throws ExceptionDao {
+	public boolean delete(T pUneEntite) throws ExceptionDao {
 		if (pUneEntite == null) {
 			return false;
 		}
@@ -243,73 +160,35 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 		if (pUneEntite.getId() == null) {
 			throw new ExceptionDao("L'entite n'a pas d'ID");
 		}
-		boolean doCommit = false;
-		boolean connexionCreated = connexion == null;
-		PreparedStatement ps = null;
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setAutoCommit(false);
-			}
-
-			String request = "delete from " + this.getTableName() + " where " + this.getPkName() + "=?;";
-			ps = connexion.prepareStatement(request);
-			ps.setInt(1, pUneEntite.getId().intValue());
-
-			ps.execute();
-			doCommit = true;
+			String sql = "delete from " + this.getTableName() + " where " + this.getPkName() + "=?;";
+			return 1 == jdbcTemplate.update(sql, pUneEntite.getId().intValue());
 		} catch (Exception e) {
 			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, doCommit, ps, null, connexion);
 		}
-
-		return doCommit;
 	}
 
 	@Override
-	public T select(int pUneClef, Connection connexion) throws ExceptionDao {
+	public T select(int pUneClef) throws ExceptionDao {
 		T result = null;
 		AbstractDAO.LOG.debug("select sur {} avec id={}", this.getClass(), String.valueOf(pUneClef));
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		boolean connexionCreated = connexion == null;
+		String sql = "select " + this.getAllColumnNames() + " from " + this.getTableName() + " where "
+				+ this.getPkName() + "=?;";
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setReadOnly(true);
-			}
-			String request = "select " + this.getAllColumnNames() + " from " + this.getTableName() + " where "
-					+ this.getPkName() + "=?;";
-			ps = connexion.prepareStatement(request);
-			ps.setInt(1, pUneClef);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				result = this.fromResultSet(rs);
-			}
-
-		} catch (Exception e) {
-			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, true, ps, rs, connexion);
+			 result = this.getJdbcTemplate().queryForObject(sql, this.getMapper(), pUneClef);
+		} catch (EmptyResultDataAccessException ex) {
+			return null;
+		} catch (Exception ex) {
+			throw new ExceptionDao(ex);
 		}
-
 		return result;
 	}
 
 	@Override
-	public List<T> selectAll(String pAWhere, String pAnOrderBy, Connection connexion) throws ExceptionDao {
+	public List<T> selectAll(String pAWhere, String pAnOrderBy) throws ExceptionDao {
 		List<T> result = new ArrayList<T>();
 		AbstractDAO.LOG.debug("selectAll sur {} avec where={} prderBy={}", this.getClass(), pAWhere, pAnOrderBy);
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		boolean connexionCreated = connexion == null;
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setReadOnly(true);
-			}
-
 			StringBuilder request = new StringBuilder();
 			request.append("select ").append(this.getAllColumnNames()).append(" from ");
 			request.append(this.getTableName());
@@ -323,38 +202,13 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 			}
 			request.append(';');
 			AbstractDAO.LOG.debug("selectAll sur {} - requete={}", this.getClass(), request.toString());
-			ps = connexion.prepareStatement(request.toString());
 
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				T ce = this.fromResultSet(rs);
-				result.add(ce);
-			}
-
+			String sql = request.toString();
+			result = this.getJdbcTemplate().query(sql, this.getMapper());
 		} catch (Exception e) {
 			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, true, ps, rs, connexion);
 		}
-
 		return result;
-	}
-
-	@Override
-	public final Connection getConnexion() throws ExceptionDao {
-		try {
-			Class.forName(this.bddDriver);
-		} catch (Exception e) {
-			AbstractDAO.LOG.error("Impossible de charger le driver pour la base", e);
-			throw new ExceptionDao(e);
-		}
-
-		try {
-			return DriverManager.getConnection(this.bddUrl, this.bddLogin, this.bddPwd);
-		} catch (SQLException e) {
-			AbstractDAO.LOG.error("Erreur lors de l'acces a la base", e);
-			throw new ExceptionDao(e);
-		}
 	}
 
 	/**
@@ -395,8 +249,12 @@ public abstract class AbstractDAO<T extends IEntity> implements IDAO<T> {
 		}
 	}
 
-	public void setBddDriver(String bddDriver) {
-		this.bddDriver = bddDriver;
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
 	}
 
 }

@@ -90,7 +90,7 @@ public class OperationService extends AbstractService implements IOperationServi
 		// On verifie que le compte appartient bien a l'utilisateur
 		ICompteEntity compte = null;
 		try {
-			compte = this.getCompteDao().select(unCompteId, null);
+			compte = this.getCompteDao().select(unCompteId);
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}
@@ -103,7 +103,7 @@ public class OperationService extends AbstractService implements IOperationServi
 
 		IOperationEntity resultat = null;
 		try {
-			resultat = this.getOperationDao().select(uneOperationId, null);
+			resultat = this.getOperationDao().select(uneOperationId);
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}
@@ -133,7 +133,7 @@ public class OperationService extends AbstractService implements IOperationServi
 
 		ICompteEntity compte;
 		try {
-			compte = this.getCompteDao().select(unCompteId, null);
+			compte = this.getCompteDao().select(unCompteId);
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}
@@ -146,7 +146,7 @@ public class OperationService extends AbstractService implements IOperationServi
 
 		List<IOperationEntity> resultat = new ArrayList<IOperationEntity>();
 		try {
-			resultat = this.getOperationDao().selectAll("compteId=" + unCompteId, "date DESC", null);
+			resultat = this.getOperationDao().selectAll("compteId=" + unCompteId, "date DESC");
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}
@@ -175,7 +175,7 @@ public class OperationService extends AbstractService implements IOperationServi
 		}
 		List<IOperationEntity> resultat = new ArrayList<IOperationEntity>();
 		try {
-			resultat = this.getOperationDao().selectCriteria(unCompteId, unDebut, uneFin, crediDebit, null);
+			resultat = this.getOperationDao().selectCriteria(unCompteId, unDebut, uneFin, crediDebit);
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
 		}
@@ -207,11 +207,9 @@ public class OperationService extends AbstractService implements IOperationServi
 		Connection connexion = null;
 		boolean doCommit = false;
 		try {
-			connexion = this.getCompteDao().getConnexion();
-			connexion.setAutoCommit(false);
 			ICompteEntity compteSrc = null;
 			try {
-				compteSrc = this.getCompteDao().select(unCompteIdSrc, connexion);
+				compteSrc = this.getCompteDao().select(unCompteIdSrc);
 			} catch (ExceptionDao e) {
 				throw new ErreurTechniqueException(e);
 			}
@@ -223,7 +221,7 @@ public class OperationService extends AbstractService implements IOperationServi
 			}
 			ICompteEntity compteDst = null;
 			try {
-				compteDst = this.getCompteDao().select(unCompteIdDst, connexion);
+				compteDst = this.getCompteDao().select(unCompteIdDst);
 			} catch (ExceptionDao e) {
 				throw new ErreurTechniqueException(e);
 			}
@@ -265,22 +263,18 @@ public class OperationService extends AbstractService implements IOperationServi
 			opDst.setMontant(Double.valueOf(unMontant));
 			opDst.setLibelle("Transaction avec le compte " + unCompteIdSrc);
 
-			opSrc = this.getOperationDao().insert(opSrc, connexion);
-			opDst = this.getOperationDao().insert(opDst, connexion);
+			opSrc = this.getOperationDao().insert(opSrc);
+			opDst = this.getOperationDao().insert(opDst);
 			compteSrc.setSolde(Double.valueOf(soldeSrc));
 			compteDst.setSolde(Double.valueOf(soldeDst));
-			this.getCompteDao().update(compteSrc, connexion);
-			this.getCompteDao().update(compteDst, connexion);
+			this.getCompteDao().update(compteSrc);
+			this.getCompteDao().update(compteDst);
 
 			resultat.add(opSrc);
 			resultat.add(opDst);
 			doCommit = true;
 		} catch (ExceptionDao e) {
 			throw new ErreurTechniqueException(e);
-		} catch (SQLException e) {
-			throw new ErreurTechniqueException(e);
-		} finally {
-			AbstractDAO.handleTransaction(true, doCommit, null, null, connexion);
 		}
 		return resultat;
 	}

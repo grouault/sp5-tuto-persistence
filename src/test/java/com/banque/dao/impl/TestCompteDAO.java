@@ -56,7 +56,7 @@ public class TestCompteDAO {
 		unCpt1.setUtilisateurId(Integer.valueOf(1));
 		ICompteEntity unCpt2 = null;
 		try {
-			unCpt2 = TestCompteDAO.compteDao.insert(unCpt1, null);
+			unCpt2 = TestCompteDAO.compteDao.insert(unCpt1);
 		} catch (ExceptionDao e) {
 			TestCompteDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -81,7 +81,7 @@ public class TestCompteDAO {
 		unCpt1.setUtilisateurId(Integer.valueOf(1));
 
 		try {
-			unCpt1 = TestCompteDAO.compteDao.insert(unCpt1, null);
+			unCpt1 = TestCompteDAO.compteDao.insert(unCpt1);
 		} catch (ExceptionDao e) {
 			Assert.fail(e.getMessage());
 		}
@@ -91,7 +91,7 @@ public class TestCompteDAO {
 		unCpt1.setLibelle("Cpt change test");
 		ICompteEntity unCpt2 = null;
 		try {
-			unCpt2 = TestCompteDAO.compteDao.update(unCpt1, null);
+			unCpt2 = TestCompteDAO.compteDao.update(unCpt1);
 		} catch (ExceptionDao e) {
 			TestCompteDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -115,7 +115,7 @@ public class TestCompteDAO {
 		unCpt1.setUtilisateurId(Integer.valueOf(1));
 
 		try {
-			unCpt1 = TestCompteDAO.compteDao.insert(unCpt1, null);
+			unCpt1 = TestCompteDAO.compteDao.insert(unCpt1);
 		} catch (ExceptionDao e) {
 			TestCompteDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -124,7 +124,7 @@ public class TestCompteDAO {
 		Assert.assertNotNull("Le compte doit avoir un id non null", unCpt1.getId());
 		boolean resu = false;
 		try {
-			resu = TestCompteDAO.compteDao.delete(unCpt1, null);
+			resu = TestCompteDAO.compteDao.delete(unCpt1);
 		} catch (ExceptionDao e) {
 			TestCompteDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -139,7 +139,7 @@ public class TestCompteDAO {
 	public void selectOk() {
 		ICompteEntity unCpt1 = null;
 		try {
-			unCpt1 = TestCompteDAO.compteDao.select(12, null);
+			unCpt1 = TestCompteDAO.compteDao.select(12);
 		} catch (ExceptionDao e) {
 			TestCompteDAO.LOG.error("Erreur", e);
 			Assert.fail(e.getMessage());
@@ -156,7 +156,7 @@ public class TestCompteDAO {
 		List<ICompteEntity> liste = null;
 		ICompteEntity unCpt1 = null;
 		try {
-			liste = TestCompteDAO.compteDao.selectAll("id=12", null, null);
+			liste = TestCompteDAO.compteDao.selectAll("id=12", null);
 			unCpt1 = liste.get(0);
 		} catch (ExceptionDao e) {
 			TestCompteDAO.LOG.error("Erreur", e);

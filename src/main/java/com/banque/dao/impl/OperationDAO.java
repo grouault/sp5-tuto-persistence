@@ -1,5 +1,7 @@
 package com.banque.dao.impl;
 
+import com.banque.dao.util.CompteJdbcMapper;
+import com.banque.dao.util.OperationJdbcMapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +18,7 @@ import com.banque.dao.IOperationDAO;
 import com.banque.dao.ex.ExceptionDao;
 import com.banque.entity.IOperationEntity;
 import com.banque.entity.impl.OperationEntity;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,24 +38,6 @@ public class OperationDAO extends AbstractDAO<IOperationEntity> implements IOper
 	@Override
 	protected String getTableName() {
 		return "operation";
-	}
-
-	@Override
-	protected IOperationEntity fromResultSet(ResultSet rs) throws SQLException {
-		IOperationEntity result = new OperationEntity();
-		result.setId(Integer.valueOf(rs.getInt("id")));
-		result.setLibelle(rs.getString("libelle"));
-		double vm = rs.getDouble("montant");
-		// Le montant etait-il null ?
-		boolean mnull = rs.wasNull();
-		if (!mnull) {
-			result.setMontant(Double.valueOf(vm));
-		} else {
-			result.setMontant(null);
-		}
-		result.setDate(rs.getTimestamp("date"));
-		result.setCompteId(Integer.valueOf(rs.getInt("compteId")));
-		return result;
 	}
 
 	@Override
@@ -87,20 +72,20 @@ public class OperationDAO extends AbstractDAO<IOperationEntity> implements IOper
 	}
 
 	@Override
-	public List<IOperationEntity> selectCriteria(int unCompteId, Date unDebut, Date uneFin, Boolean pCreditDebit,
-			Connection connexion) throws ExceptionDao {
+	protected RowMapper<IOperationEntity> getMapper() {
+		return new OperationJdbcMapper();
+	}
+
+	@Override
+	public List<IOperationEntity> selectCriteria(int unCompteId, Date unDebut, Date uneFin,
+			Boolean pCreditDebit) throws ExceptionDao {
+
 		List<IOperationEntity> result = new ArrayList<IOperationEntity>();
 		OperationDAO.LOG.debug("selectCriteria sur {} unCompteId={} unDebut={} uneFin={} pCreditDebit={}",
 				this.getClass(), String.valueOf(unCompteId), String.valueOf(unDebut), String.valueOf(uneFin),
 				String.valueOf(pCreditDebit));
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		boolean connexionCreated = connexion == null;
+
 		try {
-			if (connexionCreated) {
-				connexion = this.getConnexion();
-				connexion.setReadOnly(true);
-			}
 
 			StringBuilder request = new StringBuilder();
 			request.append("select ").append(this.getAllColumnNames()).append(" from ");
@@ -145,22 +130,14 @@ public class OperationDAO extends AbstractDAO<IOperationEntity> implements IOper
 			}
 
 			request.append(" order by date DESC");
-
 			request.append(';');
 			OperationDAO.LOG.debug("selectCriteria sur {} requete={}", this.getClass(), request.toString());
-			ps = connexion.prepareStatement(request.toString());
-			AbstractDAO.setPrepareStatement(ps, gaps);
 
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				result.add(this.fromResultSet(rs));
-			}
+			String sql = request.toString();
+			result = this.getJdbcTemplate().query(sql, this.getMapper(), gaps.toArray());
 		} catch (Exception e) {
 			throw new ExceptionDao(e);
-		} finally {
-			AbstractDAO.handleTransaction(connexionCreated, true, ps, rs, connexion);
 		}
-
 		return result;
 	}
 
